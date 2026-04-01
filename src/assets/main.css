@@ -1,0 +1,79 @@
+body {
+  background-color: #000;
+}
+
+.swagger-ui {
+  color: #fff;
+}
+
+.swagger-ui .info .title {
+  color: #fff;
+}
+
+.swagger-ui .opblock-tag {
+  color: #fff;
+}
+
+.swagger-ui .opblock-tag small {
+  color: #fff;
+}
+
+.swagger-ui .opblock .opblock-summary-description {
+  color: #fff;
+}
+
+.swagger-ui .opblock .opblock-summary-operation-id,
+.swagger-ui .opblock .opblock-summary-path,
+.swagger-ui .opblock .opblock-summary-path__deprecated {
+  color: #fff;
+}
+
+.arrow {
+  fill: #fff;
+}
+
+.swagger-ui table thead tr td,
+.swagger-ui table thead tr th {
+  color: #fff;
+}
+
+.swagger-ui .parameter__name {
+  color: #fff;
+}
+
+.swagger-ui .parameter__type {
+  color: #fff;
+}
+
+.swagger-ui .tab li {
+  color: #fff;
+}
+
+.swagger-ui label {
+  color: #fff;
+}
+
+.swagger-ui .opblock .opblock-section-header h4 {
+  color: #fff;
+}
+
+.swagger-ui .btn {
+  color: #fff;
+}
+
+.swagger-ui .opblock .opblock-section-header > label {
+  color: #fff;
+}
+
+.swagger-ui .response-col_status {
+  color: #fff;
+}
+
+.swagger-ui .response-col_description {
+  color: #fff;
+}
+
+.swagger-ui .opblock .opblock-section-header {
+  background: transparent;
+  border-bottom: 1px solid #fff;
+}
