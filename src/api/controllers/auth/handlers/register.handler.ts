@@ -2,12 +2,21 @@ import { di } from "@config";
 import { appConfig } from "@main";
 import { AuthService, IRegister } from "@api/services";
 import { FastifyReply, FastifyRequest } from "fastify";
+import { ApiError } from "@api/errors";
 
 export const registerHandler = async (req: FastifyRequest, reply: FastifyReply) => {
   const authService = di.container.resolve<AuthService>("authService");
-  const data = req.body as IRegister;
+  const { email, login, password, confirmPassword } = req.body as IRegister;
+  if (!email || !login || !password || !confirmPassword) {
+    throw ApiError.badRequest({ msg: "Какое-то из полей пустое" });
+  }
 
-  const tokens = await authService.registerUser(data);
+  const tokens = await authService.registerUser({
+    email,
+    login,
+    password,
+    confirmPassword,
+  });
 
   const isLocalhost = appConfig.HOSTNAME === "localhost";
 
