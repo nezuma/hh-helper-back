@@ -3,6 +3,7 @@ import {
   authAcceptHandler,
   authCheckHandler,
   authHandler,
+  registerAcceptHandler,
   registerHandler,
 } from "./handlers";
 import {
@@ -43,6 +44,11 @@ export const authRouter = (
     url: "/register",
     schema: registerSchema,
     handler: registerHandler,
+  });
+  fastify.route({
+    method: "GET",
+    url: "/register/accept",
+    handler: registerAcceptHandler,
   });
 
   done();

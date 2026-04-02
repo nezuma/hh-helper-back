@@ -26,58 +26,72 @@ export class AuthService {
     password,
     confirmPassword,
   }: IRegister): Promise<ITokens> {
+    if (password.length <= 5) {
+      throw ApiError.badRequest({ msg: "Пароль слишком короткий", alert: true });
+    }
+    if (password !== confirmPassword) {
+      throw ApiError.badRequest({ msg: "Проли не совпадают", alert: true });
+    }
+    const findedUserByEmail = await User.findOne({ email: email }).lean();
+    if (findedUserByEmail) {
+      throw ApiError.alreadyExists({
+        msg: "Пользователь с такой почтой уже существует",
+        alert: true,
+      });
+    }
+    const findedUserByLogin = await User.findOne({ login: login }).lean();
+    if (findedUserByLogin) {
+      throw ApiError.alreadyExists({
+        msg: "Пользователь с таким логином уже существует",
+        alert: true,
+      });
+    }
+
     try {
-      const user = await User.findOne({ $or: [{ email: email, login: login }] }).lean();
-      if (password.length <= 5) {
-        throw ApiError.badRequest({ msg: "Пароль слишком слабый", alert: true });
+      const hashedPassword = this.cryptoService.encodeToSHA256(password);
+      const baseTariff = await this.tariffService.getBaseTariff();
+      const newUser = await this.userService.createUser({
+        email,
+        login,
+        hashedPassword,
+        tariffName: baseTariff.name,
+        tariffDuration: baseTariff.duration,
+      });
+      const regToken = this.cryptoService.encodeToSHA256(String(newUser._id));
+      const accessToken = this.cryptoService.generateAccessToken(newUser._id);
+      const refreshToken = this.cryptoService.generateRefreshToken(newUser._id);
+
+      const verificationUrl =
+        appConfig.SERVICE_MODE === "dev"
+          ? `http://${appConfig.CLIENT_URL}:5173/register/accept?token=${regToken}&email=${email}&userId=${newUser._id}`
+          : `https://${appConfig.CLIENT_URL}/register/accept?token=${regToken}&email=${email}&userId=${newUser._id}`;
+      if (appConfig.SERVICE_MODE === "dev") {
+        console.log(verificationUrl);
       }
 
-      if (!user) {
-        if (password === confirmPassword) {
-          const hashedPassword = this.cryptoService.encodeToSHA256(password);
-          const baseTariff = await this.tariffService.getBaseTariff();
-          const newUser = await this.userService.createUser({
-            email,
-            login,
-            hashedPassword,
-            tariffName: baseTariff.name,
-            tariffDuration: baseTariff.duration,
-          });
-          const regToken = this.cryptoService.encodeToSHA256(String(newUser._id));
-          const accessToken = this.cryptoService.generateAccessToken(newUser._id);
-          const refreshToken = this.cryptoService.generateRefreshToken(newUser._id);
+      await this.authLogService.createAuthLog({
+        email,
+        userId: newUser._id,
+        regToken,
+        accessToken,
+        refreshToken,
+        verificationUrl,
+      });
 
-          const verificationUrl = `${appConfig.CLIENT_API}/auth/accept?token=${regToken}&email=${email}&userId=${newUser._id}`;
+      if (appConfig.SERVICE_MODE !== "dev") {
+        const message = this.mailService.createStringForSendAuthLink(verificationUrl);
 
-          await this.authLogService.createAuthLog({
-            email,
-            userId: newUser._id,
-            regToken,
-            accessToken,
-            refreshToken,
-            verificationUrl,
-          });
-
-          if (appConfig.SERVICE_MODE != "dev") {
-            const message = this.mailService.createStringForSendAuthLink(verificationUrl);
-
-            await this.mailService.sendHtmlMail({
-              mail: email,
-              subject: "Подтверждение почты на сервисе hh-helper",
-              html: message,
-            });
-          }
-
-          return {
-            accessToken,
-            refreshToken,
-          };
-        }
-        throw ApiError.alreadyExists({
-          msg: "Пользователь с такой почтой или логином уже существует",
-          alert: true,
+        await this.mailService.sendHtmlMail({
+          mail: email,
+          subject: "Подтверждение почты на сервисе hh-helper",
+          html: message,
         });
       }
+
+      return {
+        accessToken,
+        refreshToken,
+      };
     } catch (e) {
       console.log(e);
     }

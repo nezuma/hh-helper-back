@@ -186,7 +186,7 @@ export class MailService {
           <div class="footer">
             <p>© 2024 HH Helper. Все права защищены.</p>
             <p>
-              <a href="${appConfig.CLIENT_API}/privacy-policy">Политика конфиденциальности</a>
+              <a href="${appConfig.CLIENT_URL}/privacy-policy">Политика конфиденциальности</a>
             </p>
           </div>
         </div>

@@ -46,8 +46,8 @@ export async function bootstrapApp() {
   await app.register(fastifyCookie);
 
   await app.register(fastifyCors, {
-    methods: ["PATCH", "GET"],
-    origin: true,
+    methods: ["PATCH", "GET", "POST", "PUT", "DELETE"],
+    origin: true, // конкретные адреса
     credentials: true,
   });
   await app.register(fastifyFormbody);

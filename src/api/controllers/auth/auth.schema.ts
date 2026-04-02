@@ -147,3 +147,5 @@ export const registerSchema: FastifySchema = {
     },
   },
 };
+
+export const registerAcceptSchema: FastifySchema = {};

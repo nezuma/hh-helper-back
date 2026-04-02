@@ -3,7 +3,7 @@ export interface IConfig {
   API_URL: string;
   NODE_ENV: string;
   HOSTNAME: string;
-  CLIENT_API: string;
+  CLIENT_URL: string;
   LOGGER_URL: string;
   LOGGER_TAG: string;
   EMAIL_HOST: string;
