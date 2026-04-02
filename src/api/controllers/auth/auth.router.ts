@@ -1,6 +1,16 @@
 import { FastifyInstance, RegisterOptions } from "fastify";
-import { authAcceptHandler, authCheckHandler, authHandler } from "./handlers";
-import { authAcceptSchema, authCheckSchema, authSchema } from "./auth.schema";
+import {
+  authAcceptHandler,
+  authCheckHandler,
+  authHandler,
+  registerHandler,
+} from "./handlers";
+import {
+  authAcceptSchema,
+  authCheckSchema,
+  authSchema,
+  registerSchema,
+} from "./auth.schema";
 
 export const authRouter = (
   fastify: FastifyInstance,
@@ -26,6 +36,13 @@ export const authRouter = (
     url: "/auth-check",
     schema: authCheckSchema,
     handler: authCheckHandler,
+  });
+
+  fastify.route({
+    method: "POST",
+    url: "/register",
+    schema: registerSchema,
+    handler: registerHandler,
   });
 
   done();

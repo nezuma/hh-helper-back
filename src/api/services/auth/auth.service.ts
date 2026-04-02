@@ -2,20 +2,22 @@ import { Types } from "mongoose";
 import { appConfig } from "@main";
 import * as jwt from "jsonwebtoken";
 import { ApiError } from "@api/errors";
-import { IAuthLog, IRegister } from "./auth.types";
+import { IAuthLog, IRegister, ITokens } from "./auth.types";
 import { IUser, UserService } from "../user";
 import { type JwtPayload } from "jsonwebtoken";
 import { AuthLogService } from "./auth-logs.service";
 import { User } from "@api/models";
 import { CryptoService } from "./crypto.service";
 import { TariffService } from "../tariff";
+import { MailService } from "../mail";
 
 export class AuthService {
   constructor(
     private userService: UserService,
-    private authLogService: AuthLogService,
+    private mailService: MailService,
     private cryptoService: CryptoService,
-    private tariffService: TariffService
+    private tariffService: TariffService,
+    private authLogService: AuthLogService
   ) {}
 
   async registerUser({
@@ -23,23 +25,61 @@ export class AuthService {
     login,
     password,
     confirmPassword,
-  }: IRegister): Promise<void> {
-    const user = await User.findOne({ $or: [{ email: email, login: login }] }).lean();
-    if (!user) {
-      if (password === confirmPassword) {
-        const hashedPassword = this.cryptoService.encodeToSHA256(password);
-        const baseTariff = await this.tariffService.getBaseTariff();
-        await User.create({
-          email: email,
-          login: login,
-          password: hashedPassword,
-          name: null,
-          tariff: {
+  }: IRegister): Promise<ITokens> {
+    try {
+      const user = await User.findOne({ $or: [{ email: email, login: login }] }).lean();
+      if (password.length <= 5) {
+        throw ApiError.badRequest({ msg: "Пароль слишком слабый", alert: true });
+      }
+
+      if (!user) {
+        if (password === confirmPassword) {
+          const hashedPassword = this.cryptoService.encodeToSHA256(password);
+          const baseTariff = await this.tariffService.getBaseTariff();
+          const newUser = await this.userService.createUser({
+            email,
+            login,
+            hashedPassword,
             tariffName: baseTariff.name,
             tariffDuration: baseTariff.duration,
-          },
+          });
+          const regToken = this.cryptoService.encodeToSHA256(String(newUser._id));
+          const accessToken = this.cryptoService.generateAccessToken(newUser._id);
+          const refreshToken = this.cryptoService.generateRefreshToken(newUser._id);
+
+          const verificationUrl = `${appConfig.CLIENT_API}/auth/accept?token=${regToken}&email=${email}&userId=${newUser._id}`;
+
+          await this.authLogService.createAuthLog({
+            email,
+            userId: newUser._id,
+            regToken,
+            accessToken,
+            refreshToken,
+            verificationUrl,
+          });
+
+          if (appConfig.SERVICE_MODE != "dev") {
+            const message = this.mailService.createStringForSendAuthLink(verificationUrl);
+
+            await this.mailService.sendHtmlMail({
+              mail: email,
+              subject: "Подтверждение почты на сервисе hh-helper",
+              html: message,
+            });
+          }
+
+          return {
+            accessToken,
+            refreshToken,
+          };
+        }
+        throw ApiError.alreadyExists({
+          msg: "Пользователь с такой почтой или логином уже существует",
+          alert: true,
         });
       }
+    } catch (e) {
+      console.log(e);
     }
   }
 
@@ -84,18 +124,6 @@ export class AuthService {
     return code;
   }
 
-  generateAccessToken(userId: Types.ObjectId): string {
-    return jwt.sign({ id: userId }, appConfig.SESSION_SECRET, {
-      expiresIn: 900000,
-    });
-  }
-
-  generateRefreshToken(userId: Types.ObjectId): string {
-    return jwt.sign({ id: userId }, appConfig.SESSION_SECRET, {
-      expiresIn: 604800000,
-    });
-  }
-
   verifyAccessToken(token: string): string | JwtPayload {
     try {
       const status = jwt.verify(token, appConfig.SESSION_SECRET);
@@ -130,7 +158,7 @@ export class AuthService {
       const authLog: IAuthLog =
         await this.authLogService.findAuthLogByRefreshToken(refreshToken);
       const user = await this.userService.getUser(authLog.userId, null);
-      const newAccessToken = this.generateAccessToken(user._id);
+      const newAccessToken = this.cryptoService.generateAccessToken(user._id);
       await this.authLogService.updateAuthLogById({
         id: authLog._id,
         data: { accessToken: newAccessToken },

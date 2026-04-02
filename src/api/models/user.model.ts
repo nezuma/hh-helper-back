@@ -22,13 +22,18 @@ const userSchema = new mongoose.Schema(
     },
     tariff: {
       tariffName: {
-        type: TariffKeys,
+        type: String,
       },
-      tariffDuration: Date,
+      tariffDuration: {
+        type: Date,
+      },
     },
     accepted: {
       type: Boolean,
       default: false,
+    },
+    lastVisitAt: {
+      type: Date,
     },
   },
   {

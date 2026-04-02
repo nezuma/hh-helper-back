@@ -1,11 +1,18 @@
 import { di } from "@config";
 import { appConfig } from "@main";
 import { FastifyReply, FastifyRequest } from "fastify";
-import { AuthLogService, AuthService, IAuth, UserService } from "@api/services";
+import {
+  AuthLogService,
+  AuthService,
+  CryptoService,
+  IAuth,
+  UserService,
+} from "@api/services";
 
 export const authHandler = async (req: FastifyRequest, reply: FastifyReply) => {
   const authService = di.container.resolve<AuthService>("authService");
   const userService = di.container.resolve<UserService>("userService");
+  const cryptoService = di.container.resolve<CryptoService>("cryptoService");
   const authLogService = di.container.resolve<AuthLogService>("authLogService");
 
   const { authPhone } = req.body as IAuth;
@@ -13,21 +20,21 @@ export const authHandler = async (req: FastifyRequest, reply: FastifyReply) => {
 
   let user = await userService.getUser(null, authPhone);
   if (!user) {
-    user = await userService.createUser(authPhone);
+    // user = await userService.createUser(authPhone);
   }
   const code = authService.generateAuthCode();
 
   const canCreateNewLog = await authLogService.checkSmsTime(authPhone);
 
-  if (canCreateNewLog) {
-    await authLogService.createAuthLog(
-      authPhone,
-      user._id,
-      code,
-      authService.generateAccessToken(user._id),
-      authService.generateRefreshToken(user._id)
-    );
-  }
+  // if (canCreateNewLog) {
+  //   await authLogService.createAuthLog(
+  //     authPhone,
+  //     user._id,
+  //     code,
+  //     cryptoService.generateAccessToken(user._id),
+  //     cryptoService.generateRefreshToken(user._id)
+  //   );
+  // }
 
   if (appConfig.SERVICE_MODE === "dev") {
     return reply.status(201).send({

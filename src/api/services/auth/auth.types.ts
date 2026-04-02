@@ -14,12 +14,14 @@ export interface IAuth {
 export interface IAuthLog {
   _id: Types.ObjectId;
   userId: Types.ObjectId;
-  authPhone: string;
+  email: string;
   code: number;
   liveAt: Date;
   active: boolean;
+  regToken: string;
   accessToken: string;
   refreshToken: string;
+  verificationUrl?: string;
 }
 
 export interface IAuthAccept {

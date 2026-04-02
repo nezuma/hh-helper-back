@@ -105,3 +105,45 @@ export const authCheckSchema: FastifySchema = {
     },
   },
 };
+
+export const registerSchema: FastifySchema = {
+  tags: [SwaggerContract.Tags.Auth],
+  summary: "Регистрация",
+  body: {
+    type: "object",
+    required: ["email", "login", "password", "confirmPassword"],
+    properties: {
+      email: {
+        type: "string",
+      },
+      login: {
+        type: "string",
+      },
+      password: {
+        type: "string",
+      },
+      confirmPassword: {
+        type: "string",
+      },
+    },
+  },
+  response: {
+    ...SwaggerContract.ResponseFactory(400),
+    201: {
+      accessToken: {
+        type: "string",
+      },
+      refreshToken: {
+        type: "string",
+      },
+      msg: {
+        type: "string",
+        example: "test",
+      },
+      alert: {
+        type: "boolean",
+        example: true,
+      },
+    },
+  },
+};

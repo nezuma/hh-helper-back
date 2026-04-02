@@ -66,7 +66,7 @@ export class Actor {
       if (!verifyRefresh) {
         throw ApiError.unAuth({ alert: true });
       }
-      newAccessToken = authService.generateAccessToken(foundUser._id);
+      newAccessToken = cryptoService.generateAccessToken(foundUser._id);
     }
 
     this.setUser({

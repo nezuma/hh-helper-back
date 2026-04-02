@@ -11,6 +11,9 @@ export interface IUser {
     tariffDuration: Date;
   };
   accepted: boolean;
+  lastVisitAt: Date;
+  accessToken?: string;
+  refreshToken?: string;
 }
 
 export interface IUserDevice {

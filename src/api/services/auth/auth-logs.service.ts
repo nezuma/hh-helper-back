@@ -4,22 +4,31 @@ import { IAuthLog } from "./auth.types";
 import { ApiError } from "@api/errors";
 
 export class AuthLogService {
-  async createAuthLog(
-    authPhone: string,
-    userId: Types.ObjectId,
-    code: number,
-    accessToken: string,
-    refreshToken: string
-  ): Promise<IAuthLog> {
+  async createAuthLog({
+    email,
+    userId,
+    regToken,
+    accessToken,
+    refreshToken,
+    verificationUrl,
+  }: {
+    email: string;
+    userId: Types.ObjectId;
+    regToken: string;
+    accessToken: string;
+    refreshToken: string;
+    verificationUrl?: string;
+  }): Promise<IAuthLog> {
     const liveAt = new Date(Number(new Date()) + 5 * 60 * 1000);
     const authLog = await AuthLog.create({
       userId: userId,
-      authPhone: authPhone,
-      code: code,
+      email: email,
       liveAt: liveAt,
       active: true,
+      regToken: regToken,
       accessToken: accessToken,
       refreshToken: refreshToken,
+      verificationUrl: verificationUrl,
     });
     return authLog;
   }

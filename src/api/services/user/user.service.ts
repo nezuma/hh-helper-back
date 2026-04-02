@@ -16,11 +16,27 @@ export class UserService {
     return user;
   }
 
-  async createUser(authPhone: string): Promise<IUser> {
-    if (!authPhone) {
-      throw ApiError.badRequest({ msg: "Не указан номер телефона", alert: true });
+  async createUser(data: {
+    email: string;
+    login: string;
+    hashedPassword: string;
+    tariffName: string;
+    tariffDuration: number;
+  }): Promise<IUser> {
+    if (!data) {
+      throw ApiError.badRequest({ msg: "Не указаны данные", alert: true });
     }
-    const user = await User.create({ authPhone });
+    const user = await User.create({
+      email: data.email,
+      login: data.login,
+      password: data.hashedPassword,
+      name: null,
+      tariff: {
+        tariffName: data.tariffName,
+        tariffDuration: data.tariffDuration,
+      },
+      lastVisitAt: new Date(),
+    });
     return user;
   }
 

@@ -4,7 +4,7 @@ import { Types } from "mongoose";
 export interface ITariff {
   _id: Types.ObjectId;
   name: string;
-  duration: Date | null;
+  duration: number;
   key: TariffKeys;
   price: number;
   popular: boolean;
