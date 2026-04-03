@@ -5,12 +5,13 @@ import * as jwt from "jsonwebtoken";
 import { MailService } from "../mail";
 import { ApiError } from "@api/errors";
 import { TariffService } from "../tariff";
-import { IUser, UserService } from "../user";
+import { IUser, IUserDevice, UserService } from "../user";
 import { type JwtPayload } from "jsonwebtoken";
 import { CryptoService } from "./crypto.service";
 import { RegisterLogService } from "./register-logs.service";
 import { IAcceptRegister, IRegisterLog, IRegister, ITokens, IAuth } from "./auth.types";
 import { appLogger, AppLogger } from "@winston-logger";
+import { AuthLogService } from "./auth-log.service";
 
 export class AuthService {
   constructor(
@@ -18,7 +19,8 @@ export class AuthService {
     private mailService: MailService,
     private cryptoService: CryptoService,
     private tariffService: TariffService,
-    private registerLogService: RegisterLogService
+    private registerLogService: RegisterLogService,
+    private authLogService: AuthLogService
   ) {}
 
   /**
@@ -30,12 +32,10 @@ export class AuthService {
    * @returns {ITokens} {accessToken, refreshToken}
    *
    */
-  async registerUser({
-    email,
-    login,
-    password,
-    confirmPassword,
-  }: IRegister): Promise<ITokens> {
+  async registerUser(
+    { email, login, password, confirmPassword }: IRegister,
+    device: IUserDevice
+  ): Promise<ITokens> {
     // Проверяем длину пароля
     if (password.length <= 5) {
       throw ApiError.badRequest({ msg: "Пароль слишком короткий", alert: true });
@@ -78,6 +78,7 @@ export class AuthService {
         email,
         login,
         hashedPassword,
+        tariffId: baseTariff._id,
         tariffName: baseTariff.name,
         tariffDuration: baseTariff.duration,
       });
@@ -102,6 +103,14 @@ export class AuthService {
         accessToken,
         refreshToken,
         verificationUrl,
+      });
+
+      await this.authLogService.createAuthLog({
+        userId: newUser._id,
+        login: login,
+        accessToken,
+        refreshToken,
+        device,
       });
 
       // В проде отправляем на почту сообщение заранее сгенерированное
@@ -170,12 +179,57 @@ export class AuthService {
     }
   }
 
-  async authenticateUser({ login, password }: IAuth): Promise<IUser> {
+  async authenticateUser(
+    { login, password }: IAuth,
+    device: IUserDevice
+  ): Promise<{ user: IUser; tokens: ITokens }> {
     const user = await User.findOne({ login: login }).lean();
-    if (!user) {
-      throw ApiError.noPermission({ msg: "" });
+    const createAuthLog = async () => {
+      await this.authLogService.createAuthLog({
+        userId: null,
+        login: login,
+        accessToken: null,
+        refreshToken: null,
+        device,
+      });
+    };
+
+    if (!login) {
+      throw ApiError.noPermission({ msg: "Неверный логин или пароль" });
     }
-    return;
+
+    if (!password) {
+      await createAuthLog();
+      throw ApiError.noPermission({ msg: "Неверный логин или пароль" });
+    }
+
+    if (!user) {
+      await createAuthLog();
+      throw ApiError.noPermission({ msg: "Неверный логин или пароль" });
+    }
+
+    if (user.password != this.cryptoService.encodeToSHA256(password)) {
+      await createAuthLog();
+      throw ApiError.noPermission({ msg: "Неверный логин или пароль" });
+    }
+
+    if (!(await this.authLogService.checkAuthTime(login))) {
+      throw ApiError.noPermission({
+        msg: "Слишком много попыток авторизации, попробуйте позже!",
+      });
+    }
+
+    const accessToken = this.cryptoService.generateAccessToken(user._id);
+    const refreshToken = this.cryptoService.generateRefreshToken(user._id);
+
+    await this.authLogService.createAuthLog({
+      userId: user._id,
+      login,
+      accessToken,
+      refreshToken,
+      device,
+    });
+    return { user: user, tokens: { accessToken, refreshToken } };
   }
 
   // async verifyTheProfileExistence(authPhone: string): Promise<IUser | void> {

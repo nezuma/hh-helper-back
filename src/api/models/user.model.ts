@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose, { Types } from "mongoose";
 import { IUser } from "@api/services";
 import { TariffKeys } from "./tariff.model";
 
@@ -21,6 +21,9 @@ const userSchema = new mongoose.Schema(
       type: String,
     },
     tariff: {
+      tariffId: {
+        type: Types.ObjectId,
+      },
       tariffName: {
         type: String,
       },
@@ -34,6 +37,10 @@ const userSchema = new mongoose.Schema(
     },
     lastVisitAt: {
       type: Date,
+    },
+    role: {
+      type: String,
+      default: "applicant",
     },
   },
   {

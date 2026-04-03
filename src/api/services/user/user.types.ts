@@ -7,6 +7,7 @@ export interface IUser {
   password: string;
   name: string;
   tariff: {
+    tariffId: Types.ObjectId;
     tariffName: string;
     tariffDuration: Date;
   };
@@ -14,6 +15,7 @@ export interface IUser {
   lastVisitAt: Date;
   accessToken?: string;
   refreshToken?: string;
+  role: string;
 }
 
 export interface IUserDevice {

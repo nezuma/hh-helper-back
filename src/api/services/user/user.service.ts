@@ -26,6 +26,7 @@ export class UserService {
     email: string;
     login: string;
     hashedPassword: string;
+    tariffId: Types.ObjectId;
     tariffName: string;
     tariffDuration: number;
   }): Promise<IUser> {
@@ -38,6 +39,7 @@ export class UserService {
       password: data.hashedPassword,
       name: null,
       tariff: {
+        tariffId: data.tariffId,
         tariffName: data.tariffName,
         tariffDuration: data.tariffDuration,
       },

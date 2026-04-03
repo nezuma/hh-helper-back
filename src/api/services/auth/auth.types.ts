@@ -1,4 +1,5 @@
 import { Types } from "mongoose";
+import { IUserDevice } from "../user";
 
 export interface IRegister {
   email: string;
@@ -22,13 +23,23 @@ export interface IRegisterLog {
   _id: Types.ObjectId;
   userId: Types.ObjectId;
   email: string;
-  code: number;
   liveAt: Date;
   active: boolean;
   regToken: string;
   accessToken: string;
   refreshToken: string;
   verificationUrl?: string;
+}
+
+export interface IAuthLog {
+  _id?: Types.ObjectId;
+  userId: Types.ObjectId | null;
+  login: string;
+  liveAt?: Date;
+  active?: boolean;
+  accessToken: string | null;
+  refreshToken: string | null;
+  device: IUserDevice;
 }
 
 export interface IAuthAccept {

@@ -3,6 +3,7 @@ import { UserService } from "../user";
 import { ApiError } from "@api/errors";
 import { RegisterLog } from "@api/models";
 import { IAcceptRegister, IRegisterLog } from "./auth.types";
+import { AuthLog } from "@api/models/auth-log.model";
 
 export class RegisterLogService {
   constructor(private userService: UserService) {}
@@ -83,60 +84,5 @@ export class RegisterLogService {
   //     refreshToken,
   //   }).sort({ createdAt: -1 });
   //   return authLog;
-  // }
-
-  // async updateAuthLogById({
-  //   id,
-  //   data,
-  // }: {
-  //   id: Types.ObjectId;
-  //   data: object;
-  // }): Promise<void> {
-  //   await AuthLog.updateOne({ _id: id }, { data });
-  // }
-
-  // async updateAuthLogByUserId(userId: Types.ObjectId): Promise<void> {
-  //   await AuthLog.updateOne(
-  //     { userId },
-  //     {
-  //       active: false,
-  //     }
-  //   );
-  // }
-
-  // async checkSmsTime(authPhone: string): Promise<boolean> {
-  //   const authLog = await this.findAuthLogByPhone(authPhone);
-  //   if (
-  //     authLog &&
-  //     authLog.active &&
-  //     Number(authLog.liveAt) - 4 * 60 * 1000 > Number(new Date())
-  //   ) {
-  //     const awaitTime =
-  //       (Number(authLog.liveAt) - 4 * 60 * 1000 - Number(new Date())) / 1000;
-
-  //     throw ApiError.alreadyExists({
-  //       msg: `Код уже был отправлен Вам на телефон, повторная отправка будет доступна через: ${Math.floor(awaitTime)} секунд`,
-  //       alert: true,
-  //     });
-  //   }
-
-  //   const authLogCountForOneUser = await AuthLog.find({
-  //     authPhone: authPhone,
-  //     createdAt: { $gte: new Date(Number(new Date()) - 5 * 60 * 1000) },
-  //   })
-  //     .sort({ createdAt: -1 })
-  //     .countDocuments();
-
-  //   if (authLogCountForOneUser >= 3) {
-  //     throw ApiError.tooManyRequests({
-  //       msg: "Слишком много попыток авторизации",
-  //       alert: true,
-  //     });
-  //   }
-
-  //   if (authLog) {
-  //     await this.updateAuthLogById({ id: authLog._id, data: { active: false } });
-  //   }
-  //   return true;
   // }
 }

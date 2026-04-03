@@ -17,12 +17,15 @@ export const registerHandler = async (req: FastifyRequest, reply: FastifyReply) 
   }
 
   // Переходим к процессу регистрации в сервис
-  const tokens = await authService.registerUser({
-    email,
-    login,
-    password,
-    confirmPassword,
-  });
+  const tokens = await authService.registerUser(
+    {
+      email,
+      login,
+      password,
+      confirmPassword,
+    },
+    req.actor.getUserDevice
+  );
 
   // Если сервер на локалке
   const isLocalhost = appConfig.HOSTNAME === "localhost";
