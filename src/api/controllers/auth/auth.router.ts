@@ -1,16 +1,17 @@
 import { FastifyInstance, RegisterOptions } from "fastify";
 import {
-  authAcceptHandler,
-  authCheckHandler,
+  // authAcceptHandler,
+  // authCheckHandler,
   authHandler,
-  registerAcceptHandler,
   registerHandler,
+  registerAcceptHandler,
 } from "./handlers";
 import {
-  authAcceptSchema,
-  authCheckSchema,
+  // authAcceptSchema,
+  // authCheckSchema,
   authSchema,
   registerSchema,
+  registerAcceptSchema,
 } from "./auth.schema";
 
 export const authRouter = (
@@ -20,36 +21,38 @@ export const authRouter = (
 ) => {
   fastify.route({
     method: "POST",
+    url: "/register",
+    schema: registerSchema,
+    handler: registerHandler,
+  });
+
+  fastify.route({
+    method: "GET",
+    url: "/register/accept",
+    schema: registerAcceptSchema,
+    handler: registerAcceptHandler,
+  });
+
+  fastify.route({
+    method: "POST",
     url: "/auth",
     schema: authSchema,
     handler: authHandler,
   });
 
-  fastify.route({
-    method: "PATCH",
-    url: "/auth-accept",
-    schema: authAcceptSchema,
-    handler: authAcceptHandler,
-  });
+  // fastify.route({
+  //   method: "PATCH",
+  //   url: "/auth-accept",
+  //   schema: authAcceptSchema,
+  //   handler: authAcceptHandler,
+  // });
 
-  fastify.route({
-    method: "PATCH",
-    url: "/auth-check",
-    schema: authCheckSchema,
-    handler: authCheckHandler,
-  });
-
-  fastify.route({
-    method: "POST",
-    url: "/register",
-    schema: registerSchema,
-    handler: registerHandler,
-  });
-  fastify.route({
-    method: "GET",
-    url: "/register/accept",
-    handler: registerAcceptHandler,
-  });
+  // fastify.route({
+  //   method: "PATCH",
+  //   url: "/auth-check",
+  //   schema: authCheckSchema,
+  //   handler: authCheckHandler,
+  // });
 
   done();
 };

@@ -1,12 +1,12 @@
 import { di } from "@config";
-import { IUser, OrderService } from "@api/services";
+import { UserService } from "@api/services";
 import { FastifyReply, FastifyRequest } from "fastify";
 
 export const profileHandler = async (req: FastifyRequest, reply: FastifyReply) => {
-  const orderService = di.container.resolve<OrderService>("orderService");
+  const userService = di.container.resolve<UserService>("userService");
   const userId = req.actor.getUser._id;
 
-  const orders = await orderService.getAllOrdersByUserId(userId);
+  const user = await userService.getUserById(userId, false);
 
-  return reply.send(orders).status(200);
+  return reply.send(user).status(200);
 };

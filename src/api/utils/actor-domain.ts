@@ -7,7 +7,7 @@ import {
   UserService,
   CryptoService,
   IUserDevice,
-  AuthLogService,
+  RegisterLogService,
 } from "@api/services";
 
 export class Actor {
@@ -44,7 +44,8 @@ export class Actor {
     const authService = di.container.resolve<AuthService>("authService");
     const userService = di.container.resolve<UserService>("userService");
     const cryptoService = di.container.resolve<CryptoService>("cryptoService");
-    const authHistoryService = di.container.resolve<AuthLogService>("authLogService");
+    const registerLogService =
+      di.container.resolve<RegisterLogService>("registerLogService");
 
     let decodedData: { id: string };
     if (!accessToken) {
@@ -53,8 +54,8 @@ export class Actor {
       decodedData = cryptoService.decodeJwtSignature(accessToken);
     }
     const userId = OID(decodedData.id);
-    const foundUser = await userService.getUser(userId, null);
-    const session = await authHistoryService.findAuthLogByUserId(userId);
+    const foundUser = await userService.getUserById(userId);
+    const session = await registerLogService.findRegisterLogByUserId(userId);
 
     if (!session) {
       throw ApiError.unAuth({ alert: true });

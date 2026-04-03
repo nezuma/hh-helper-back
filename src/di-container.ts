@@ -7,7 +7,7 @@ import {
   OrderService,
   CryptoService,
   TariffService,
-  AuthLogService,
+  RegisterLogService,
 } from "@api/services";
 
 export const enableServiceInjection = () => {
@@ -18,6 +18,6 @@ export const enableServiceInjection = () => {
     orderService: asClass(OrderService).singleton(),
     tariffService: asClass(TariffService).singleton(),
     cryptoService: asClass(CryptoService).singleton(),
-    authLogService: asClass(AuthLogService).singleton(),
+    registerLogService: asClass(RegisterLogService).singleton(),
   });
 };

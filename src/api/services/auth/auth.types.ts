@@ -7,11 +7,18 @@ export interface IRegister {
   confirmPassword: string;
 }
 
-export interface IAuth {
-  authPhone: string;
+export interface IAcceptRegister {
+  token: string;
+  email: string;
+  userId: Types.ObjectId;
 }
 
-export interface IAuthLog {
+export interface IAuth {
+  login: string;
+  password: string;
+}
+
+export interface IRegisterLog {
   _id: Types.ObjectId;
   userId: Types.ObjectId;
   email: string;

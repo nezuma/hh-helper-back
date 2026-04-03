@@ -1,7 +1,7 @@
-import { IAuthLog } from "@api/services";
 import mongoose from "mongoose";
+import { IRegisterLog } from "@api/services";
 
-const authLogSchema = new mongoose.Schema(
+const registerLogSchema = new mongoose.Schema(
   {
     userId: mongoose.Schema.Types.ObjectId,
     email: String,
@@ -20,4 +20,4 @@ const authLogSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
-export const AuthLog = mongoose.model<IAuthLog>("AuthLog", authLogSchema);
+export const RegisterLog = mongoose.model<IRegisterLog>("RegisterLog", registerLogSchema);
