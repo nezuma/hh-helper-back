@@ -9,6 +9,7 @@ import {
   TariffService,
   AuthLogService,
   RegisterLogService,
+  AdminService,
 } from "@api/services";
 
 export const enableServiceInjection = () => {
@@ -17,6 +18,7 @@ export const enableServiceInjection = () => {
     userService: asClass(UserService).singleton(),
     mailService: asClass(MailService).singleton(),
     orderService: asClass(OrderService).singleton(),
+    adminService: asClass(AdminService).singleton(),
     tariffService: asClass(TariffService).singleton(),
     cryptoService: asClass(CryptoService).singleton(),
     authLogService: asClass(AuthLogService).singleton(),

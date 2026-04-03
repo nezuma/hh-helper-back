@@ -5,6 +5,7 @@ import { FastifyReply, FastifyRequest } from "fastify";
 export type ApiErrorProps = Partial<{
   alert?: boolean;
   msg?: string;
+  success?: boolean;
 }>;
 
 export type UserAgent = {

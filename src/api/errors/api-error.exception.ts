@@ -11,49 +11,69 @@ export class ApiError extends Error {
   }
 
   static badRequest(
-    { msg, alert }: ApiErrorProps = { msg: "Плохой запрос", alert: true }
+    { msg, alert }: ApiErrorProps = { msg: "Плохой запрос", alert: true, success: false }
   ): ApiError {
     return new ApiError(400, msg, undefined, alert);
   }
 
   static unAuth(
-    { msg, alert }: ApiErrorProps = { msg: "Пользователь не авторизован", alert: true }
+    { msg, alert }: ApiErrorProps = {
+      msg: "Пользователь не авторизован",
+      alert: true,
+      success: false,
+    }
   ): ApiError {
     return new ApiError(401, msg, undefined, alert);
   }
 
   static forbidden(
-    { msg, alert }: ApiErrorProps = { msg: "Доступ запрещён", alert: true }
+    { msg, alert }: ApiErrorProps = {
+      msg: "Доступ запрещён",
+      alert: true,
+      success: false,
+    }
   ): ApiError {
     return new ApiError(403, msg, undefined, alert);
   }
 
   static noPermission(
-    { msg, alert }: ApiErrorProps = { msg: "Недостаточно прав", alert: true }
+    { msg, alert }: ApiErrorProps = {
+      msg: "Недостаточно прав",
+      alert: true,
+      success: false,
+    }
   ): ApiError {
     return new ApiError(403, msg, undefined, alert);
   }
 
   static notFound(
-    { msg, alert }: ApiErrorProps = { msg: "Не найдено", alert: true }
+    { msg, alert }: ApiErrorProps = { msg: "Не найдено", alert: true, success: false }
   ): ApiError {
     return new ApiError(404, msg, undefined, alert);
   }
 
   static alreadyExists(
-    { msg, alert }: ApiErrorProps = { msg: "Уже существует", alert: true }
+    { msg, alert }: ApiErrorProps = { msg: "Уже существует", alert: true, success: false }
   ): ApiError {
     return new ApiError(409, msg, undefined, alert);
   }
 
   static tooManyRequests(
-    { msg, alert }: ApiErrorProps = { msg: "Слишком много запросов", alert: true }
+    { msg, alert }: ApiErrorProps = {
+      msg: "Слишком много запросов",
+      alert: true,
+      success: false,
+    }
   ): ApiError {
     return new ApiError(429, msg, undefined, alert);
   }
 
   static internalServerError(
-    { msg, alert }: ApiErrorProps = { msg: "Внутренняя ошибка сервера", alert: true }
+    { msg, alert }: ApiErrorProps = {
+      msg: "Внутренняя ошибка сервера",
+      alert: true,
+      success: false,
+    }
   ): ApiError {
     return new ApiError(500, msg, undefined, alert);
   }

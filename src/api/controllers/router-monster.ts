@@ -7,6 +7,8 @@ import { AppContract } from "@contracts/app.namespace";
 import { FastifyInstance, FastifyRequest, RegisterOptions } from "fastify";
 import { profileRouter } from "./profile";
 import { appLogger } from "@winston-logger";
+import { adminUsersHandler } from "./admin/handlers";
+import { adminRouter } from "./admin/admin.router";
 
 export const injectAppRoutes = async (
   fastify: FastifyInstance,
@@ -82,5 +84,6 @@ export const injectAppRoutes = async (
   });
 
   await fastify.register(authRouter, opts);
+  await fastify.register(adminRouter, opts);
   await fastify.register(profileRouter, opts);
 };

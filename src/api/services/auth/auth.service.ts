@@ -38,12 +38,20 @@ export class AuthService {
   ): Promise<ITokens> {
     // Проверяем длину пароля
     if (password.length <= 5) {
-      throw ApiError.badRequest({ msg: "Пароль слишком короткий", alert: true });
+      throw ApiError.badRequest({
+        msg: "Пароль слишком короткий",
+        alert: true,
+        success: false,
+      });
     }
 
     // Сравниваем пароли
     if (password !== confirmPassword) {
-      throw ApiError.badRequest({ msg: "Проли не совпадают", alert: true });
+      throw ApiError.badRequest({
+        msg: "Проли не совпадают",
+        alert: true,
+        success: false,
+      });
     }
 
     // Ищем юзера, для исключения повторений в базе
@@ -52,6 +60,7 @@ export class AuthService {
       throw ApiError.alreadyExists({
         msg: "Пользователь с такой почтой уже существует",
         alert: true,
+        success: false,
       });
     }
     const findedUserByLogin = await User.findOne({ login: login }).lean();
@@ -59,6 +68,7 @@ export class AuthService {
       throw ApiError.alreadyExists({
         msg: "Пользователь с таким логином уже существует",
         alert: true,
+        success: false,
       });
     }
 
@@ -148,21 +158,33 @@ export class AuthService {
   }: IAcceptRegister): Promise<IRegisterLog> {
     // Помимо валидации, дополнительно валидируем, на всякий
     if (!token || !email || !userId) {
-      throw ApiError.badRequest({ msg: "Неактивная ссылка подтверждения", alert: true });
+      throw ApiError.badRequest({
+        msg: "Неактивная ссылка подтверждения",
+        alert: true,
+        success: false,
+      });
     }
 
     // Проверяем юзера на существование
     const emailUser = await this.userService.getUserByEmail(email);
     const idUser = await this.userService.getUserById(userId);
     if (!emailUser || !idUser) {
-      throw ApiError.badRequest({ msg: "Неактивная ссылка подтверждения", alert: true });
+      throw ApiError.badRequest({
+        msg: "Неактивная ссылка подтверждения",
+        alert: true,
+        success: false,
+      });
     }
 
     // Проверяем логи дополнительно
     const regLogByUserId = await this.registerLogService.findRegisterLogByUserId(userId);
     const regLogByEmail = await this.registerLogService.findRegisterLogByEmail(email);
     if (!regLogByUserId || !regLogByEmail) {
-      throw ApiError.notFound({ msg: "Неактивная ссылка подтверждения", alert: true });
+      throw ApiError.notFound({
+        msg: "Неактивная ссылка подтверждения",
+        alert: true,
+        success: false,
+      });
     }
 
     try {
@@ -195,27 +217,45 @@ export class AuthService {
     };
 
     if (!login) {
-      throw ApiError.noPermission({ msg: "Неверный логин или пароль" });
+      throw ApiError.noPermission({
+        msg: "Неверный логин или пароль",
+        alert: true,
+        success: false,
+      });
     }
 
     if (!password) {
       await createAuthLog();
-      throw ApiError.noPermission({ msg: "Неверный логин или пароль" });
+      throw ApiError.noPermission({
+        msg: "Неверный логин или пароль",
+        alert: true,
+        success: false,
+      });
     }
 
     if (!user) {
       await createAuthLog();
-      throw ApiError.noPermission({ msg: "Неверный логин или пароль" });
+      throw ApiError.noPermission({
+        msg: "Неверный логин или пароль",
+        alert: true,
+        success: false,
+      });
     }
 
     if (user.password != this.cryptoService.encodeToSHA256(password)) {
       await createAuthLog();
-      throw ApiError.noPermission({ msg: "Неверный логин или пароль" });
+      throw ApiError.noPermission({
+        msg: "Неверный логин или пароль",
+        alert: true,
+        success: false,
+      });
     }
 
     if (!(await this.authLogService.checkAuthTime(login))) {
       throw ApiError.noPermission({
         msg: "Слишком много попыток авторизации, попробуйте позже!",
+        alert: true,
+        success: false,
       });
     }
 

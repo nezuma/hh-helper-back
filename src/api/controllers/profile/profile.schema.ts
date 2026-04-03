@@ -52,3 +52,53 @@ export const profileTariffSchema: FastifySchema = {
   },
   response: {},
 };
+
+export const profileSettingsSchema: FastifySchema = {
+  tags: [SwaggerContract.Tags.Profile],
+  summary: "Настройки",
+  querystring: {
+    type: "object",
+    properties: {
+      settingType: {
+        type: "string",
+        enum: ["changePassword", "changeName"],
+      },
+    },
+    required: ["settingType"],
+  },
+  body: {
+    type: "object",
+    properties: {
+      oldPassword: {
+        type: "string",
+      },
+      newPassword: {
+        type: "string",
+      },
+      confirmNewPassword: {
+        type: "string",
+      },
+      newName: {
+        type: "string",
+      },
+    },
+    allOf: [
+      {
+        if: {
+          properties: { settingType: { const: "changePassword" } },
+        },
+        then: {
+          required: ["oldPassword", "newPassword", "confirmNewPassword"],
+        },
+      },
+      {
+        if: {
+          properties: { settingType: { const: "chaneName" } },
+        },
+        then: {
+          required: ["newName"],
+        },
+      },
+    ],
+  },
+};

@@ -94,8 +94,8 @@ export async function apiErrorHandler(
   /**
    * Обязательно напечатаем необработанную ошибку
    */
-  appLogger.fatal(error.message);
-  console.error(error);
+  appLogger.verbose(error.message);
+  console.log(error);
 
   return reply.code(500).send({
     alert: true,

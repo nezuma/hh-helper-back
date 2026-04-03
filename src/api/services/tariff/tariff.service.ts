@@ -14,11 +14,16 @@ export class TariffService {
     return baseTariff;
   }
 
-  async getAllTariffs(pagination: Pagination): Promise<ITariff[]> {
-    const tariffs = await Tariff.find().skip(pagination.skip).limit(pagination.limit);
+  async getAllTariffs(): Promise<ITariff[]> {
+    const tariffs = await Tariff.find();
     if (!tariffs) {
       throw ApiError.notFound({ msg: "Тарифов нет", alert: true });
     }
     return tariffs;
+  }
+
+  async getPopularTariff(): Promise<ITariff> {
+    const popularTariff = await Tariff.findOne({ popular: true }).lean();
+    return popularTariff;
   }
 }

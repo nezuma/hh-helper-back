@@ -51,3 +51,8 @@ export interface ITokens {
   accessToken: string;
   refreshToken: string;
 }
+
+export interface IAuthHHBody {
+  username: string;
+  password: string;
+}
