@@ -36,14 +36,17 @@ export const profileSchema: FastifySchema = {
   },
 };
 
-export const profileOrderSchema: FastifySchema = {
+export const profileTariffSchema: FastifySchema = {
   tags: [SwaggerContract.Tags.Profile],
-  summary: "Профиль",
+  summary: "Тарифы",
   querystring: {
     type: "object",
     properties: {
-      id: {
-        type: "string",
+      skip: {
+        type: "number",
+      },
+      limit: {
+        type: "number",
       },
     },
   },

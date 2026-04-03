@@ -1,6 +1,6 @@
 import { checkToken } from "@api/middlewares";
-import { profileHandler, profileOrderHandler } from "./handlers";
-import { profileOrderSchema, profileSchema } from "./profile.schema";
+import { profileHandler, profileTariffHandler } from "./handlers";
+import { profileTariffSchema, profileSchema } from "./profile.schema";
 import { FastifyInstance, RegisterOptions } from "fastify";
 
 export const profileRouter = (
@@ -18,10 +18,10 @@ export const profileRouter = (
 
   fastify.route({
     method: "GET",
-    url: "/profile/order",
+    url: "/profile/tariffs",
     preHandler: [checkToken()],
-    schema: profileOrderSchema,
-    handler: profileOrderHandler,
+    schema: profileTariffSchema,
+    handler: profileTariffHandler,
   });
 
   done();
