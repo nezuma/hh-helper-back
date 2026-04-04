@@ -9,6 +9,7 @@ import { profileRouter } from "./profile";
 import { appLogger } from "@winston-logger";
 import { adminUsersHandler } from "./admin/handlers";
 import { adminRouter } from "./admin/admin.router";
+import { ticketRouter } from "./ticket/ticket.router";
 
 export const injectAppRoutes = async (
   fastify: FastifyInstance,
@@ -86,4 +87,5 @@ export const injectAppRoutes = async (
   await fastify.register(authRouter, opts);
   await fastify.register(adminRouter, opts);
   await fastify.register(profileRouter, opts);
+  await fastify.register(ticketRouter, opts);
 };

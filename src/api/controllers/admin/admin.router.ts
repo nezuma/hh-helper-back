@@ -1,6 +1,11 @@
 import { FastifyInstance, RegisterOptions } from "fastify";
-import { adminAnalyticsHandler, adminMainHandler, adminUsersHandler } from "./handlers";
-import { profileTariffSchema } from "../profile";
+import {
+  adminAnalyticsHandler,
+  adminMainHandler,
+  adminSendMessageOrSwitchStatusHandler,
+  adminTicketHandler,
+  adminUsersHandler,
+} from "./handlers";
 import { checkDostup, checkToken } from "@api/middlewares";
 
 export const adminRouter = (
@@ -27,6 +32,20 @@ export const adminRouter = (
     url: "/admin/analytics",
     preHandler: [checkToken(), checkDostup()],
     handler: adminAnalyticsHandler,
+  });
+
+  fastify.route({
+    method: "GET",
+    url: "/admin/tickets",
+    preHandler: [checkToken(), checkDostup()],
+    handler: adminTicketHandler,
+  });
+
+  fastify.route({
+    method: "PATCH",
+    url: "/admin/tickets",
+    preHandler: [checkToken(), checkDostup()],
+    handler: adminSendMessageOrSwitchStatusHandler,
   });
 
   done();
