@@ -61,7 +61,7 @@ export class TicketService {
       return "секунд";
     }
 
-    if (Number(lastTicket.createdAt) + 5 * 60 * 1000 > Number(new Date())) {
+    if (lastTicket && Number(lastTicket.createdAt) + 5 * 60 * 1000 > Number(new Date())) {
       const lastTicketMinusFiveMin = Number(lastTicket.createdAt) + 5 * 60 * 1000;
       const newDate = Number(new Date());
       const remainingMs = lastTicketMinusFiveMin - newDate;
@@ -309,7 +309,7 @@ export class TicketService {
         $push: {
           messages: {
             text: data.message,
-            isAdmin: false,
+            isAdmin: true,
             userName: user.name ? user.name : user.login,
             userAvatar: null,
             createdAt: new Date(),
